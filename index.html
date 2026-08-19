@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VidaPura Pro_v 1.2.0</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VidaPura">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2948/2948231.png">
+    <link rel="manifest" href="./manifest.json">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --verde-bosque: #1b3022;
+            --verde-medio: #395744;
+            --verde-claro: #4e775d;
+            --verde-fondo: #f0f4f2;
+            --verde-bloque: #d8e2dc;
+            --crema: #fdfaf5;
+            --blanco: #ffffff;
+            --gris-clave: #718096;
+            --card-bg: #ffffff;
+            --text-main: #1b3022;
+            --nav-bg: #ffffff;
+            --border-color: #d8e2dc;
+        }
+
+        /* Modo Oscuro Automático (Material 3 Dark Scheme) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --verde-bosque: #0f1d14;
+                --verde-medio: #263d2e;
+                --verde-claro: #5c8c6e;
+                --verde-fondo: #121814;
+                --verde-bloque: #223328;
+                --crema: #1a241e;
+                --blanco: #18221b;
+                --gris-clave: #a0aec0;
+                --card-bg: #1e2b22;
+                --text-main: #e2e8f0;
+                --nav-bg: #162019;
+                --border-color: #2a3e31;
+            }
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; background-color: var(--verde-fondo); color: var(--text-main);
+            display: flex; justify-content: center; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-container {
+            width: 100%; max-width: 420px; min-height: 100vh;
+            background: var(--verde-fondo); position: relative;
+            padding-bottom: 110px; box-sizing: border-box;
+            box-shadow: 0 0 50px rgba(0,0,0,0.3);
+        }
+
+        header {
+            padding: 50px 25px 30px; background: var(--verde-bosque); color: var(--crema);
+            border-radius: 0 0 45px 45px; text-align: center;
+        }
+
+        h1 { font-size: 2.5rem; margin: 0; font-weight: 800; letter-spacing: -1.5px; }
+
+        .energy-card {
+            margin: -25px 25px 20px; background: var(--card-bg);
+            border-radius: 28px; padding: 20px; display: flex; align-items: center;
+            border: 2px solid var(--border-color); box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+
+        .progress-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: conic-gradient(var(--verde-claro) var(--p, 0%), var(--verde-bloque) 0);
+            display: flex; align-items: center; justify-content: center; margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .progress-circle::after {
+            content: attr(data-pct); width: 66px; height: 66px; background: var(--card-bg);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.1rem; color: var(--text-main);
+        }
+
+        .meal-suggestion {
+            margin: 0 25px 20px; background: var(--verde-medio); color: #ffffff;
+            border-radius: 30px; padding: 25px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 12px;
+            font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: inline-block;
+        }
+
+        .btn-action {
+            background: var(--verde-claro); color: white; padding: 18px; border-radius: 20px;
+            border: none; font-weight: 700; font-size: 1.05rem; width: calc(100% - 50px);
+            margin: 8px 25px; cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
+        }
+
+        .btn-action:active {
+            transform: scale(0.97);
+        }
+
+        .modal-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--crema); z-index: 1000; display: none; flex-direction: column;
+            padding: 40px 25px; box-sizing: border-box; overflow-y: auto; color: var(--text-main);
+        }
+
+        #sosModal { background: var(--verde-bosque); color: #ffffff; text-align: center; }
+
+        .breathe-circle {
+            width: 200px; height: 200px; border: 6px solid var(--verde-claro);
+            border-radius: 50%; margin: 40px auto; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 1.3rem; transition: 4s ease-in-out;
+        }
+
+        .ingredient-pill {
+            display: inline-block; background: var(--verde-bloque); padding: 10px 16px;
+            border-radius: 15px; margin: 5px; font-size: 0.95rem; font-weight: 600; color: var(--text-main);
+        }
+
+        .footer-brand {
+            position: absolute; bottom: 100px; width: 100%; text-align: center;
+            font-size: 0.8rem; color: var(--gris-clave); opacity: 0.7;
+            font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+        }
+
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; max-width: 420px; height: 80px;
+            background: var(--nav-bg); display: flex; justify-content: space-around;
+            align-items: center; border-top: 2px solid var(--border-color); z-index: 900;
+        }
+
+        .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; }
+        .nav-item.active { opacity: 1.0; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .history-item {
+            background: var(--card-bg); padding: 15px 20px; border-radius: 18px;
+            margin: 10px 25px; border: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>VidaPura</h1>
+        <p style="opacity: 0.9; font-weight: 500; margin-top: 5px;">Salud y equilibrio consciente v1.2.0</p>
+    </header>
+
+    <!-- PESTAÑA 1: INICIO -->
+    <div id="tab-home" class="tab-content active">
+        <div class="energy-card">
+            <div class="progress-circle" id="energyCircle" data-pct="0%"></div>
+            <div>
+                <div style="font-weight: 800; font-size: 1.2rem;">Bienestar Diario</div>
+                <span id="waterStats" style="font-size: 0.85rem; color: var(--gris-clave);">Agua: 0 / 2000 ml</span>
+            </div>
+        </div>
+
+        <div class="meal-suggestion" onclick="openRecipe()">
+            <span class="tag" id="mealTag">CARGANDO...</span>
+            <h3 id="mainMealTitle" style="font-size: 1.6rem; margin: 0; line-height: 1.2;">Tu menú ideal</h3>
+            <p style="margin-top:12px; opacity: 0.9; font-size: 0.95rem;">Toca para abrir sugerencia →</p>
+        </div>
+
+        <button class="btn-action" onclick="registerWater()">💧 Registrar Agua (+250ml)</button>
+        <button class="btn-action" style="background:var(--verde-medio); margin-top:10px;" onclick="toggleWaterReminders()">🔔 Recordatorios de Agua</button>
+        <button class="btn-action" style="background:#cd5c5c; margin-top:15px;" onclick="openSOS()">🆘 Botón de Apoyo</button>
+    </div>
+
+    <!-- PESTAÑA 2: RECETAS -->
+    <div id="tab-recipes" class="tab-content">
+        <div style="padding: 20px 25px 5px;">
+            <h2 style="margin:0;">Catálogo de Menús</h2>
+            <p style="color: var(--gris-clave); font-size:0.9rem;">Platos equilibrados y ligeros</p>
+        </div>
+        <div id="fullRecipeList"></div>
+    </div>
+
+    <!-- PESTAÑA 3: PERFIL / HISTORIAL -->
+    <div id="tab-profile" class="tab-content">
+        <div style="padding: 20px 25px 10px;">
+            <h2 style="margin:0;">Tu Historial</h2>
+            <p style="color: var(--gris-clave); font-size:0.9rem;">Registro guardado en IndexedDB</p>
+        </div>
+        <div id="historyLog"></div>
+    </div>
+
+    <div class="footer-brand">medbasha</div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('home', this)">🌿</div>
+        <div class="nav-item" onclick="switchTab('recipes', this)">🥗</div>
+        <div class="nav-item" onclick="switchTab('profile', this)">👤</div>
+    </nav>
+</div>
+
+<!-- MODAL RECETA -->
+<div id="recipeModal" class="modal-view">
+    <span onclick="closeModal('recipeModal')" style="font-size: 2.2rem; font-weight: 800; cursor: pointer;">✕</span>
+    <h2 id="modalTitle" style="font-size: 2.2rem; margin: 20px 0 10px;"></h2>
+    <div id="recipeAdvice" style="background: var(--verde-fondo); padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 6px solid var(--verde-claro); font-size: 1rem; line-height: 1.5;"></div>
+    <div id="ingredientsContainer"></div>
+    <div style="margin-top: auto; padding-top: 20px;">
+        <button class="btn-action" style="margin: 8px 0; width: 100%; background: var(--verde-medio);" onclick="shuffle()">🔄 Ver otra idea</button>
+        <button class="btn-action" style="margin: 8px 0; width: 100%;" onclick="confirmMeal()">He cocinado esto</button>
+    </div>
+</div>
+
+<!-- MODAL SOS -->
+<div id="sosModal" class="modal-view">
+    <span onclick="closeModal('sosModal')" style="font-size: 2.2rem; font-weight: 800; cursor: pointer; color: white;">✕</span>
+    <h2 style="margin-top: 20px; font-size: 2rem;">Calma medbasha...</h2>
+    <p style="opacity: 0.8; font-size: 1rem;">Antes de decidir, respira conmigo.</p>
+    <div class="breathe-circle" id="bCircle">INSPIRA</div>
+    <div style="margin-top: auto; margin-bottom: 30px;">
+        <p style="font-style: italic; font-size: 1rem; padding: 0 15px;">"El impulso emocional solo dura unos minutos. Mantén tu compromiso."</p>
+    </div>
+</div>
+
+<script>
+    // FEEDBACK HÁPTICO (VIBRACIÓN)
+    function vibrate(pattern = 40) {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(pattern);
+        }
+    }
+
+    // Registro del Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+    }
+
+    // Solicitud de permisos al iniciar
+    window.addEventListener('load', () => {
+        initDB().then(() => {
+            loadTodayData();
+            renderAllRecipes();
+        });
+    });
+
+    // RECORDATORIOS DE AGUA Y NOTIFICACIONES PUSH LOCALES
+    function toggleWaterReminders() {
+        vibrate(30);
+        if (!("Notification" in window)) {
+            alert("Tu navegador no soporta notificaciones.");
+            return;
+        }
+
+        if (Notification.permission === "granted") {
+            scheduleWaterNotification();
+            alert("¡Recordatorios de agua activos! Te avisaremos periódicamente.");
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    scheduleWaterNotification();
+                    alert("¡Recordatorios activados!");
+                }
+            });
+        }
+    }
+
+    function scheduleWaterNotification() {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: 'SCHEDULE_WATER_REMINDER'
+            });
+        } else if (Notification.permission === "granted") {
+            setTimeout(() => {
+                new Notification("VidaPura 💧", {
+                    body: "¡Hora de beber agua! Mantén tu cuerpo hidratado, medbasha.",
+                    icon: "https://cdn-icons-png.flaticon.com/512/2948/2948231.png"
+                });
+            }, 7200000); // 2 horas
+        }
+    }
+
+    // SISTEMA INDEXEDDB
+    let db;
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open("VidaPuraDB", 1);
+            request.onupgradeneeded = (e) => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains("dailyLogs")) {
+                    db.createObjectStore("dailyLogs", { keyPath: "date" });
+                }
+            };
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                resolve();
+            };
+            request.onerror = (e) => reject(e);
+        });
+    }
+
+    function getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    async function loadTodayData() {
+        const tx = db.transaction("dailyLogs", "readonly");
+        const store = tx.objectStore("dailyLogs");
+        const key = getTodayKey();
+        const req = store.get(key);
+
+        req.onsuccess = () => {
+            const data = req.result || { date: key, water: 0, meals: [] };
+            currentWater = data.water;
+            updateUI();
+            loadHistory();
+        };
+    }
+
+    async function saveData(waterAdd = 0, newMeal = null) {
+        const tx = db.transaction("dailyLogs", "readwrite");
+        const store = tx.objectStore("dailyLogs");
+        const key = getTodayKey();
+        
+        const req = store.get(key);
+        req.onsuccess = () => {
+            let data = req.result || { date: key, water: 0, meals: [] };
+            data.water += waterAdd;
+            if (newMeal) data.meals.push(newMeal);
+            store.put(data);
+            currentWater = data.water;
+            updateUI();
+            loadHistory();
+        };
+    }
+
+    // BASE DE DATOS LOCAL
+    const database = {
+        lunch: [
+            { t: "Pollo al Curry", i: "Pollo, Coco, Cúrcuma, Brócoli", a: "Saciante y potente antiinflamatorio." },
+            { t: "Pavo con Almendras", i: "Pavo, Almendras, Calabacín", a: "Grasas sanas y energía duradera." },
+            { t: "Pechuga Provenzal", i: "Pollo, Hierbas, Tomatitos", a: "Sabor mediterráneo ligero." },
+            { t: "Hamburguesa Fit", i: "Pollo picado, Rúcula, Tomate", a: "Proteína limpia sin harinas." },
+            { t: "Bacalao con Tomate", i: "Bacalao, Tomate natural, Pimiento", a: "Clásico rico en yodo." },
+            { t: "Salmón y Espárragos", i: "Salmón, Espárragos, Limón", a: "Omega-3 para tu bienestar." },
+            { t: "Ensalada Lentejas", i: "Lentejas, Huevo, Pepino", a: "Hierro y fibra para tu tarde." },
+            { t: "Quinoa Verduras", i: "Quinoa, Pimientos, Zanahoria", a: "Superalimento completo." }
+        ],
+        dinner: [
+            { t: "Tortilla Calabacín", i: "Huevos, Calabacín", a: "Suave para dormir bien." },
+            { t: "Crema Calabaza", i: "Calabaza, Puerro, Jengibre", a: "Relajante y digestiva." },
+            { t: "Sopa Pescado Limpia", i: "Caldo, Merluza, Arroz", a: "Ligereza pura antes del sueño." },
+            { t: "Revuelto Gambas", i: "Huevos, Gambas, Ajitos", a: "Salud premium en 5 minutos." },
+            { t: "Crema de Calabacín", i: "Calabacín, Quesito ligero", a: "La cena más suave del mundo." },
+            { t: "Pescado Papillote", i: "Pescado blanco, Calabacín", a: "Cocina al vapor muy limpia." }
+        ]
+    };
+
+    let currentWater = 0;
+    let type = 'lunch';
+    let currentRecipe = null;
+
+    function init() {
+        const h = new Date().getHours();
+        type = (h >= 12 && h < 17) ? 'lunch' : 'dinner';
+        document.getElementById('mealTag').innerText = (type === 'lunch' ? 'COMIDA' : 'CENA') + ' SALUDABLE';
+    }
+
+    function registerWater() {
+        vibrate([30, 50, 30]);
+        saveData(250, null);
+    }
+
+    function updateUI() {
+        const target = 2000;
+        const pct = Math.min(Math.round((currentWater / target) * 100), 100);
+        const c = document.getElementById('energyCircle');
+        c.style.setProperty('--p', pct + '%');
+        c.setAttribute('data-pct', pct + '%');
+        document.getElementById('waterStats').innerText = `Agua: ${currentWater} / ${target} ml`;
+    }
+
+    function openRecipe() {
+        vibrate(25);
+        const idx = Math.floor(Math.random() * database[type].length);
+        updateContent(idx);
+        document.getElementById('recipeModal').style.display = 'flex';
+    }
+
+    function updateContent(idx) {
+        currentRecipe = database[type][idx];
+        document.getElementById('modalTitle').innerText = currentRecipe.t;
+        document.getElementById('recipeAdvice').innerText = currentRecipe.a;
+        const container = document.getElementById('ingredientsContainer');
+        container.innerHTML = "";
+        currentRecipe.i.split(', ').forEach(ing => {
+            const s = document.createElement('span');
+            s.className = "ingredient-pill"; s.innerText = ing;
+            container.appendChild(s);
+        });
+    }
+
+    function shuffle() {
+        vibrate(20);
+        updateContent(Math.floor(Math.random() * database[type].length));
+    }
+
+    function confirmMeal() {
+        vibrate([40, 60, 40]);
+        if (currentRecipe) {
+            saveData(0, currentRecipe.t);
+        }
+        closeModal('recipeModal');
+    }
+
+    function openSOS() {
+        vibrate([100, 50, 100]);
+        document.getElementById('sosModal').style.display = 'flex';
+        startBreathing();
+    }
+
+    function startBreathing() {
+        const circle = document.getElementById('bCircle');
+        let state = 0;
+        const texts = ["INSPIRA", "MANTÉN", "EXPIRA"];
+        const loop = setInterval(() => {
+            if (document.getElementById('sosModal').style.display === 'none') { clearInterval(loop); return; }
+            circle.innerText = texts[state % 3];
+            if (state % 3 === 0) { 
+                vibrate(30);
+                circle.style.transform = "scale(1.3)"; 
+                circle.style.background = "rgba(78, 119, 93, 0.4)"; 
+            }
+            else if (state % 3 === 2) { 
+                circle.style.transform = "scale(1)"; 
+                circle.style.background = "transparent"; 
+            }
+            state++;
+        }, 4000);
+    }
+
+    function closeModal(id) {
+        vibrate(15);
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function switchTab(tabName, el) {
+        vibrate(20);
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        el.classList.add('active');
+    }
+
+    function renderAllRecipes() {
+        const list = document.getElementById('fullRecipeList');
+        list.innerHTML = "";
+        const all = [...database.lunch, ...database.dinner];
+        all.forEach(item => {
+            const div = document.createElement('div');
+            div.className = "history-item";
+            div.innerHTML = `<div><strong>${item.t}</strong><br><small style="color:var(--gris-clave);">${item.i}</small></div>`;
+            list.appendChild(div);
+        });
+    }
+
+    function loadHistory() {
+        const container = document.getElementById('historyLog');
+        container.innerHTML = "";
+        const tx = db.transaction("dailyLogs", "readonly");
+        const store = tx.objectStore("dailyLogs");
+        store.openCursor(null, "prev").onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+                const val = cursor.value;
+                const div = document.createElement('div');
+                div.className = "history-item";
+                div.innerHTML = `<div><strong>${val.date}</strong><br><small>💧 ${val.water} ml | 🥗 ${val.meals.length} comidas</small></div>`;
+                container.appendChild(div);
+                cursor.continue();
+            }
+        };
+    }
+
+    init();
+</script>
+</body>
+</html>
